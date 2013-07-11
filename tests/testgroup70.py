@@ -993,3 +993,43 @@ class Grp70No230(base_tests.SimpleDataPlane):
         flow_match_test(self, config["port_map"], pkt=pkt, exp_pkt=exp_pkt, 
                         action_list=acts, max_test=2)
 
+class Grp70No250(base_tests.SimpleDataPlane):
+    
+    """ Correct implementation of sequential actions """
+
+    @wireshark_capture    
+    def runTest(self):
+
+        logging = get_logger()
+        logging.info("Running Grp70No250 test")
+
+        of_ports = config["port_map"].keys()
+        of_ports.sort()
+        self.assertTrue(len(of_ports) > 1, "Not enough ports for test")
+        
+        #Clear switch state
+        rv = delete_all_flows(self.controller)
+        self.assertEqual(rv, 0, "Failed to delete all flows")
+        # flow with modifed arguments
+        flow_mod_msg = message.flow_mod()
+        flow_mod_msg.match.wildcards = ofp.OFPFW_ALL^ofp.OFPFW_IN_PORT
+        flow_mod_msg.match.in_port = of_ports[0]
+        act = action.action_set_vlan_vid()
+        act.type = ofp.OFPAT_SET_VLAN_VID
+        act.len = 8 
+        act.port = of_ports[1]
+        act.vlan_vid = 200 # incorrect vid 
+        act.pad = [0, 0]
+        self.assertTrue(flow_mod_msg.actions.add(act), "Could not add action")
+   
+        act1 = action.action_set_vlan_vid()
+        act1.type = ofp.OFPAT_SET_VLAN_VID
+        act1.len = 8 
+        act1.port = of_ports[1]
+        act1.vlan_vid = 200 # incorrect vid 
+        act1.pad = [0, 0]
+        self.assertTrue(flow_mod_msg.actions.add(act1), "Could not add action")
+
+        rv = self.controller.message_send(flow_mod_msg.pack())
+        self.assertTrue(rv != -1, "Error installing flow mod")
+        self.assertEqual(do_barrier(self.controller), 0, "Barrier failed")
