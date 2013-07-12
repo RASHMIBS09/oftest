@@ -1007,29 +1007,39 @@ class Grp70No250(base_tests.SimpleDataPlane):
         of_ports.sort()
         self.assertTrue(len(of_ports) > 1, "Not enough ports for test")
         
-        #Clear switch state
-        rv = delete_all_flows(self.controller)
-        self.assertEqual(rv, 0, "Failed to delete all flows")
-        # flow with modifed arguments
+        # Clear switch state
+        #rv = delete_all_flows(self.controller)
+        #self.assertEqual(rv, 0, "Failed to delete all flows")
+ 
+        # Adding flow 
         flow_mod_msg = message.flow_mod()
         flow_mod_msg.match.wildcards = ofp.OFPFW_ALL^ofp.OFPFW_IN_PORT
         flow_mod_msg.match.in_port = of_ports[0]
+        flow_mod_msg.command = ofp.OFPFC_ADD
         act = action.action_set_vlan_vid()
         act.type = ofp.OFPAT_SET_VLAN_VID
         act.len = 8 
-        act.port = of_ports[1]
-        act.vlan_vid = 200 # incorrect vid 
-        act.pad = [0, 0]
+        act.vlan_vid = 200  
         self.assertTrue(flow_mod_msg.actions.add(act), "Could not add action")
    
         act1 = action.action_set_vlan_vid()
         act1.type = ofp.OFPAT_SET_VLAN_VID
         act1.len = 8 
-        act1.port = of_ports[1]
-        act1.vlan_vid = 200 # incorrect vid 
-        act1.pad = [0, 0]
+        act1.vlan_vid = 300  
         self.assertTrue(flow_mod_msg.actions.add(act1), "Could not add action")
 
-        rv = self.controller.message_send(flow_mod_msg.pack())
-        self.assertTrue(rv != -1, "Error installing flow mod")
+        act2=action.action_output()       
+        act2.port = of_ports[2]
+        self.assertTrue(flow_mod_msg.actions.add(act2), "Could not add action")
+
+        act3=action.action_output()       
+        act3.port = of_ports[3]
+        self.assertTrue(flow_mod_msg.actions.add(act3), "Could not add action")
+        
+        rv1 = self.controller.message_send(flow_mod_msg.pack())
+        self.assertTrue(rv1 != -1, "Error installing flow mod")
         self.assertEqual(do_barrier(self.controller), 0, "Barrier failed")
+        #Sending packet to check if right vlan id is set
+        pkt = simple_tcp_packet(ip_dst="192.168.10.1")
+        self.dataplane.send(of_ports[0], str(pkt))
+        receive_pkt_check(self.dataplane,pkt,[of_ports[2],of_ports[3]],[of_ports[0]],self)
