@@ -1039,8 +1039,8 @@ class Grp70No250(base_tests.SimpleDataPlane):
         rv1 = self.controller.message_send(flow_mod_msg.pack())
         self.assertTrue(rv1 != -1, "Error installing flow mod")
         self.assertEqual(do_barrier(self.controller), 0, "Barrier failed")
-        sleep(5)
         #Sending packet to check if right vlan id is set
-        pkt = simple_tcp_packet(ip_dst="192.168.10.1")
+        pkt = simple_tcp_packet(ip_dst="192.168.10.1",dl_vlan_enable=True,dl_vlan=300)
+        print "##################" + str(pkt) + "####################"
         self.dataplane.send(of_ports[0], str(pkt))
-        receive_pkt_check(self.dataplane,pkt,[of_ports[2],of_ports[3]],[of_ports[0]],self)
+        receive_pkt_check(self.dataplane,pkt,[of_ports[2]],[of_ports[0]],self)
