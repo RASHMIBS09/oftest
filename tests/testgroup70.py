@@ -1013,18 +1013,14 @@ class Grp70No250(base_tests.SimpleDataPlane):
  
         # Adding flow 
         flow_mod_msg = message.flow_mod()
-        flow_mod_msg.match.wildcards = ofp.OFPFW_ALL&~(ofp.OFPFW_IN_PORT | ofp.OFPFW_DL_VLAN)
+        flow_mod_msg.match.wildcards = ofp.OFPFW_ALL&~(ofp.OFPFW_IN_PORT)
         flow_mod_msg.match.in_port = of_ports[0]
         flow_mod_msg.command = ofp.OFPFC_ADD
         act = action.action_set_vlan_vid()
-        act.type = ofp.OFPAT_SET_VLAN_VID
-        act.len = 8 
         act.vlan_vid = 200  
         self.assertTrue(flow_mod_msg.actions.add(act), "Could not add action")
    
         act1 = action.action_set_vlan_vid()
-        act1.type = ofp.OFPAT_SET_VLAN_VID
-        act1.len = 8 
         act1.vlan_vid = 300  
         self.assertTrue(flow_mod_msg.actions.add(act1), "Could not add action")
 
@@ -1036,11 +1032,12 @@ class Grp70No250(base_tests.SimpleDataPlane):
         act3.port = of_ports[2]
         self.assertTrue(flow_mod_msg.actions.add(act3), "Could not add action")
         
-        rv1 = self.controller.message_send(flow_mod_msg.pack())
+        rv1 = self.controller.message_send(flow_mod_msg)
         self.assertTrue(rv1 != -1, "Error installing flow mod")
         self.assertEqual(do_barrier(self.controller), 0, "Barrier failed")
         #Sending packet to check if right vlan id is set
-        pkt = simple_tcp_packet(ip_dst="192.168.10.1",dl_vlan_enable=True,dl_vlan=300)
+        pkt = simple_tcp_packet(ip_dst="192.168.10.1")
         print "##################" + str(pkt) + "####################"
         self.dataplane.send(of_ports[0], str(pkt))
-        receive_pkt_check(self.dataplane,pkt,[of_ports[2]],[of_ports[0]],self)
+        pkt_check = simple_tcp_packet(ip_dst="192.168.10.1",dl_vlan_enable=True,dl_vlan=300)
+        receive_pkt_check(self.dataplane,pkt_check,[of_ports[1],of_ports[2]],[of_ports[0]],self)
