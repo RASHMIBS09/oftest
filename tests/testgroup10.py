@@ -848,12 +848,15 @@ class Grp10No310(base_tests.SimpleDataPlane):
 		for x in range(4):
 			self.dataplane.send(of_ports[x], str(pkt))
 			print "Sending packet to dp port " + str(of_ports[x]) 
+			print "Expecting packet on port " +str(of_ports[x])
 			     
 			(response,pkt) = self.controller.poll(exp_msg=ofp.OFPT_PACKET_IN,timeout=2)
 			self.assertTrue(response is not None, 
 			       'Packet in event is not sent to the controller')
-
-			print "Packet received on port " +str(response.in_port)
+			self.assertEqual(str(of_ports[x]),str(response.in_port),"PORT MAPPING MISMATCH:Packet received on different port" 
+                                                                                                                 +str(response.in_port))
+                 		
+		        print "Packet received on expected port " +str(response.in_port)
 
 
 
