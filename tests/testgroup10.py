@@ -21,11 +21,13 @@ import oftest.action as action
 import oftest.parse as parse
 import oftest.base_tests as base_tests
 import oftest.illegal_message as illegal_message
-
+import json
 from oftest.oflog import *
 from oftest.testutils import *
 from time import sleep
 from FuncUtils import *
+from functools import partial
+from collections import defaultdict
 
 class Grp10No10(base_tests.SimpleDataPlane):
     """
@@ -704,6 +706,8 @@ class Grp10No300(base_tests.SimpleProtocol):
             #Capabilities
     	    format(bin(reply.capabilities))
 	    features={}
+	    tripledict = partial(defaultdict, partial(defaultdict, dict))
+	    features = tripledict()
 
 
             if(reply.actions &1<<ofp.OFPAT_OUTPUT):
@@ -819,11 +823,27 @@ class Grp10No300(base_tests.SimpleProtocol):
             features['buffer_size']= str(reply.n_buffers)
 	        
 	    features['No of Tables']= str(reply.n_tables)
-		
-	    
-	    f=open("feature.json", 'w')
+
+	    features['No of Ports']=len(reply.ports)
+	  
+	
+	    for x in range(0,len(reply.ports)):
+		    k=reply.ports[x].port_no
+		    features[k]['port_no']=reply.ports[x].port_no
+		    features[k]['Port  hw_addr']=str(reply.ports[x].hw_addr)
+		    features[k]['Port A name']=reply.ports[x].name
+		    features[k]['Port A config']=reply.ports[x].config
+		    features[k]['Port A state']=reply.ports[x].state
+		    features[k]['Port A curr']=reply.ports[x].curr
+		    features[k]['Port A advertised']=reply.ports[x].advertised
+		    features[k]['Port A supported']=reply.ports[x].supported
+		    features[k]['Port A peer']=reply.ports[x].peer
+
+           
+ 	    
+	    f=open('feature.json', "w")
 	    f.write(json.dumps(features))
- 	    f.close
+	    f.close
 	   
 
 
