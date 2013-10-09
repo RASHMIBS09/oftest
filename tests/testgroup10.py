@@ -880,6 +880,81 @@ class Grp10No310(base_tests.SimpleDataPlane):
 
 
 
+#Port Stats
+
+class Grp10No320(base_tests.SimpleDataPlane):
+	
+
+	def runTest(self):
+		port_stats={}
+		logging = get_logger()
+		
+
+		of_ports = config["port_map"].keys()
+		of_ports.sort()
+		self.assertTrue(len(of_ports) > 1, "Not enough ports for test")
+		
+		#Clear switch state
+		rv = delete_all_flows(self.controller)
+		self.assertEqual(rv, 0, "Failed to delete all flows")
+
+		#logging.info("Insert any flow matching on in_port=ingress_port, action output to egress_port T ")
+		#Insert a flow with match on all ingress port
+		(pkt,match) = wildcard_all_except_ingress(self,of_ports)
+		
+		# Send Port_Stats request for the ingress port (retrieve old counter state)
+		#logging.info("Sending Port stats request to retreive initial counter values")
+		(counter) = get_portstats(self,of_ports[1])
+		
+		
+		#port_stats['port_no']=counter[0]
+		#port_stats['pad']=counter[1]
+		port_stats['No of received packets']=counter[0]
+		port_stats['No of transmitted packets']=counter[1]
+		port_stats['No of received bytes']=counter[2]
+		port_stats['No of transmitted bytes']=counter[3]
+		port_stats['No of packets dropped rx']=counter[4]
+		port_stats['No of packets dropped tx']=counter[5]
+		port_stats['No of receive errors']=counter[6]
+		port_stats['No of transmit errors']=counter[7]
+		port_stats['No of frame alignment errors']=counter[8]
+		port_stats['No of packets with RX overrun']=counter[9]
+		port_stats['No of CRC errors']=counter[10]
+		port_stats['No of collisions']=counter[11]
+		
+		
+		f=open('portstats.json', "w")
+	    	f.write(json.dumps(port_stats))
+	    	f.close
+
+
+
+
+# FLOW STATS
+
+class Grp10No330(base_tests.SimpleDataPlane):
+	
+
+	def runTest(self):
+		port_stats={}
+
+
+		of_ports = config["port_map"].keys()
+		of_ports.sort()
+		self.assertTrue(len(of_ports) > 1, "Not enough ports for test")
+		
+		#Clear switch state
+		rv = delete_all_flows(self.controller)
+		self.assertEqual(rv, 0, "Failed to delete all flows")
+
+		
+		#Insert a flow with match on all ingress port
+		(pkt,match) = wildcard_all_except_ingress(self,of_ports)
+		
+		
+		reply=get_flowstats(self,match)
+		print reply
+		
 
 
 
