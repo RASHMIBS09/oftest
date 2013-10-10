@@ -907,8 +907,7 @@ class Grp10No320(base_tests.SimpleDataPlane):
 		(counter) = get_portstats(self,of_ports[1])
 		
 		
-		#port_stats['port_no']=counter[0]
-		#port_stats['pad']=counter[1]
+		
 		port_stats['No of received packets']=counter[0]
 		port_stats['No of transmitted packets']=counter[1]
 		port_stats['No of received bytes']=counter[2]
@@ -952,9 +951,37 @@ class Grp10No330(base_tests.SimpleDataPlane):
 		(pkt,match) = wildcard_all_except_ingress(self,of_ports)
 		
 		
-		reply=get_flowstats(self,match)
+		(reply)=get_flowstats(self,match)
+                
+                             
 		print reply
-		
+
+
+# TABLE STATS
+
+class Grp10No340(base_tests.SimpleDataPlane):
+
+	def runTest(self):
+		logging = get_logger()
+		logging.info("Running Grp60No200 Active Counter test")
+
+		of_ports = config["port_map"].keys()
+		of_ports.sort()
+		self.assertTrue(len(of_ports) > 1, "Not enough ports for test")
+		 
+		#Clear Switch state
+		rv = delete_all_flows(self.controller)
+		self.assertEqual(rv, 0, "Failed to delete all flows")
+
+		logging.info("Installing a flow entry matching on in_port=ingress_port,action = output to egress_port T ")
+	       
+
+		#Insert a flow with match on all ingress port
+		(pkt, match ) = wildcard_all_except_ingress(self,of_ports)
+
+
+		(reply) = get_tablestats(self)
+		print reply
 
 
 
