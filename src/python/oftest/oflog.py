@@ -37,9 +37,15 @@ def wireshark_capture(f):
         create_log_directory(str(args[0].__class__.__name__))
         start_wireshark()
         time.sleep(3)
-        f(*args, **kargs)
-        stop_wireshark()
-        time.sleep(3)
+	try:
+		f(*args, **kargs)
+		stop_wireshark()
+		time.sleep(3)
+	except:
+		pass
+	finally:
+		stop_wireshark()
+		time.sleep(3)
 
     if config["publish"] is None:
         return f
@@ -54,6 +60,7 @@ def create_log_directory(dirName):
     global pubName
     pubName = dirName
     logDir = "%slogs/%s" % (config["publish"], pubName)
+    print ("creating " + logDir)
     try:
         Popen(["rm", "-rf", logDir],stdout=None)
         time.sleep(1)
