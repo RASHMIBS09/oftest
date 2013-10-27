@@ -656,6 +656,7 @@ def get_flowstats(self,match):
     response, pkt = self.controller.transact(stat_req,
                                                      timeout=5)
     self.assertTrue(response is not None,"No response to stats request")
+    return (response,pkt)
 
 
 def get_aggstats(self,match):

@@ -3,7 +3,7 @@ import sys
 
 import unittest
 import random
-
+import os
 from oftest import config
 import oftest.controller as controller
 import oftest.cstruct as ofp
@@ -181,8 +181,9 @@ class Grp110No10(base_tests.SimpleProtocol):
 		    features[k]['Port A peer']=reply.ports[x].peer
 
            
- 	    
-	    f=open('feature.json', "w")
+ 	    target_dir="../ofreport"
+	    full_path=os.path.join(target_dir,'feature.json')
+	    f=open(full_path, "w")
 	    f.write(json.dumps(features))
 	    f.close
 	   
@@ -273,7 +274,11 @@ class Grp110No30(base_tests.SimpleDataPlane):
 		port_stats['No of CRC errors']=counter[10]
 		port_stats['No of collisions']=counter[11]
                 port_stats['No of Transmission errors']=counter[12]
-		f=open('portstats.json', "w")
+
+		
+ 	    	target_dir="../ofreport"
+	    	full_path=os.path.join(target_dir,'portstats.json')
+		f=open(full_path, "w")
 	    	f.write(json.dumps(port_stats))
 	    	f.close
 
@@ -332,7 +337,11 @@ class Grp110No40(base_tests.SimpleDataPlane):
 		flow_stats['match tp_dst']=reply[0].stats[0].match.tp_dst
 		flow_stats['match nw_tos']=reply[0].stats[0].match.nw_tos
 		flow_stats['match nw_proto']=reply[0].stats[0].match.nw_proto
-		f=open('flowstats.json', "w")
+	
+		
+ 	   	target_dir="../ofreport"
+	    	full_path=os.path.join(target_dir,'flowstats.json')
+		f=open(full_path, "w")
 	    	f.write(json.dumps(flow_stats))
 	    	f.close
 
@@ -371,14 +380,17 @@ class Grp110No50(base_tests.SimpleDataPlane):
 
 
 		(reply) = get_tablestats(self)
-                print reply
+		table_stats={}
+                
                 table_stats['lookup_count']=reply[0]
                 table_stats['matched_count']=reply[1]
                 table_stats['active_count']=reply[2]
 
 
-
-                f=open('tablestats.json', "w")
+	        
+ 	    	target_dir="../ofreport"
+	    	full_path=os.path.join(target_dir,'tablestats.json')
+                f=open(full_path, "w")
                 f.write(json.dumps(table_stats))
                 f.close
 
