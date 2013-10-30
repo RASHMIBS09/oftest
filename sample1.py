@@ -8,7 +8,7 @@ data = json.load(json_data)
 matching={}
 if(data["OFPAT_OUTPUT"]):
 	matching["OFPAT_OUTPUT"]={}
-        matching["OFPAT_OUTPUT"]["0"]="Grp100No100"
+        matching["OFPAT_OUTPUT"][0]="Grp100No100"
 	matching["OFPAT_OUTPUT"][1]="Grp100No120"
 	matching["OFPAT_OUTPUT"][2]="Grp100No150"
 	matching["OFPAT_OUTPUT"][3]="Grp40No50"
@@ -18,7 +18,7 @@ if(data["OFPAT_OUTPUT"]):
 
 if(data["OFPAT_SET_DL_DST"]):
 	matching["OFPAT_SET_DL_SRC"]={}
-	matching["OFPAT_SET_DL_SRC"]="Grp70No180"
+	matching["OFPAT_SET_DL_SRC"][0]="Grp70No180"
 		
 
 
@@ -27,14 +27,14 @@ if(data["OFPAT_SET_DL_DST"]):
 
 if(data["OFPAT_SET_DL_SRC"]):
 	matching["OFPAT_SET_DL_SRC"]={}
-	matching["OFPAT_SET_DL_SRC"]="Grp70No170"
+	matching["OFPAT_SET_DL_SRC"][0]="Grp70No170"
 
 
 #	matching= matching + "Grp70No170,"
 
 if(data["OFPAT_SET_NW_DST"]):
 	matching["OFPAT_SET_NW_DST"]={}
-	matching["OFPAT_SET_NW_DST"][0]={}
+	matching["OFPAT_SET_NW_DST"][0]="Grp70No200"
 
 #	matching= matching + "Grp70No200,"
 	
@@ -58,7 +58,7 @@ if(data["OFPAT_SET_TP_SRC"]):
 
 if(data["OFPAT_SET_VLAN_PCP"]):
 	matching["OFPAT_SET_VLAN_PCP"]={}
-	matching["OFPAT_SET_VLAN_PCP"]="Grp70No140"
+	matching["OFPAT_SET_VLAN_PCP"][0]="Grp70No140"
 
 
 
@@ -68,7 +68,7 @@ if(data["OFPAT_SET_VLAN_VID"]):
 	matching["OFPAT_SET_VLAN_VID"]={}
 	matching["OFPAT_SET_VLAN_VID"][0]="Grp70No120"
 	matching["OFPAT_SET_VLAN_VID"][1]="Grp70No130"
-	matching["OFPAT_SET_VLAN_VID"][2]="Grp70NO250"
+	#matching["OFPAT_SET_VLAN_VID"][2]="Grp70No250"
 
 
 #	matching= matching + "Grp70No120,Grp70No130,Grp70No250,"
@@ -139,8 +139,8 @@ if(data["OFPC_STP"]):
 
 if(data["OFPC_TABLE_STATS"]):
 	matching["OFPC_TABLE_STATS"]={}
-	matching["OFPC_TABLE_STATS"]="Grp60No200"
-	matching["OFPC_TABLE_STATS"]="Grp60No210"
+	matching["OFPC_TABLE_STATS"][0]="Grp60No200"
+	matching["OFPC_TABLE_STATS"][1]="Grp60No210"
 
 target_dir="../ofreport"
 full_path=os.path.join(target_dir,'matching.json')

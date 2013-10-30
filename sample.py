@@ -1,6 +1,9 @@
 import json
+import os
 from pprint import pprint
-json_data=open('feature.json')
+target_dir="../ofreport"
+full_path=os.path.join(target_dir,'feature.json')
+json_data=open(full_path)
 data = json.load(json_data)
 
 if(data["OFPAT_OUTPUT"]):
@@ -51,8 +54,9 @@ if(data["OFPC_QUEUE_STATS"]):
 if(data["OFPC_STP"]):
 	matching= matching + "Grp30No120"
 
-text_file = open("output.txt" , "w")
-text_file.write("Matching test cases: %s"%matching)
+write_path=os.path.join(target_dir,'matchingtestcases.txt')
+text_file = open(write_path , "w")
+text_file.write(" %s"%matching)
 text_file.close()
 
 json_data.close()

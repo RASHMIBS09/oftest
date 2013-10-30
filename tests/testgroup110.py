@@ -47,9 +47,9 @@ class Grp110No10(base_tests.SimpleProtocol):
             #Capabilities
     	    format(bin(reply.capabilities))
 	    features={}
-	    tripledict = partial(defaultdict, partial(defaultdict, dict))
-	    features = tripledict()
-
+	    # tripledict = partial(defaultdict, partial(defaultdict, dict))
+	    # features = tripledict()
+	    features_port={}
 
             if(reply.actions &1<<ofp.OFPAT_OUTPUT):
             	features['OFPAT_OUTPUT']=True
@@ -163,29 +163,33 @@ class Grp110No10(base_tests.SimpleProtocol):
 	
             features['buffer_size']= str(reply.n_buffers)
 	        
-	    features['No of Tables']= str(reply.n_tables)
+	    features['No_of_Tables']= str(reply.n_tables)
 
-	    features['No of Ports']=len(reply.ports)
-	  
+	    features['No_of_Ports']=len(reply.ports)
+	    
 	
 	    for x in range(0,len(reply.ports)):
-		    k=reply.ports[x].port_no
-		    features[k]['port_no']=reply.ports[x].port_no
-		    features[k]['Port  hw_addr']=str(reply.ports[x].hw_addr)
-		    features[k]['Port A name']=reply.ports[x].name
-		    features[k]['Port A config']=reply.ports[x].config
-		    features[k]['Port A state']=reply.ports[x].state
-		    features[k]['Port A curr']=reply.ports[x].curr
-		    features[k]['Port A advertised']=reply.ports[x].advertised
-		    features[k]['Port A supported']=reply.ports[x].supported
-		    features[k]['Port A peer']=reply.ports[x].peer
+		    features_port[x]={}
+		    features_port[x]['port_no']=reply.ports[x].port_no
+		    features_port[x]['Port_hw_addr']=str(reply.ports[x].hw_addr)
+		    features_port[x]['Port_name']=reply.ports[x].name
+		    features_port[x]['Port_config']=reply.ports[x].config
+		    features_port[x]['Port_state']=reply.ports[x].state
+		    features_port[x]['Port_curr']=reply.ports[x].curr
+		    features_port[x]['Port_advertised']=reply.ports[x].advertised
+		    features_port[x]['Port_supported']=reply.ports[x].supported
+		    features_port[x]['Port_peer']=reply.ports[x].peer
 
            
  	    target_dir="../ofreport"
 	    full_path=os.path.join(target_dir,'feature.json')
+	    full_path_port=os.path.join(target_dir,'featureport.json')
 	    f=open(full_path, "w")
 	    f.write(json.dumps(features))
-	    f.close
+	    f.close	
+	    fd=open(full_path_port, "w")
+	    fd.write(json.dumps(features_port))
+	    fd.close
 	   
 
 
@@ -261,20 +265,20 @@ class Grp110No30(base_tests.SimpleDataPlane):
         	(counter)=get_portstats(self,of_ports[1])
 		
 		
-		port_stats['No of received packets']=counter[0]
-		port_stats['No of transmitted packets']=counter[1]
-		port_stats['No of received bytes']=counter[2]
-		port_stats['No of transmitted bytes']=counter[3]
-		port_stats['No of packets dropped rx']=counter[4]
-		port_stats['No of packets dropped tx']=counter[5]
-		port_stats['No of receive errors']=counter[6]
-		port_stats['No of transmit errors']=counter[7]
-		port_stats['No of frame alignment errors']=counter[8]
-		port_stats['No of packets with RX overrun']=counter[9]
-		port_stats['No of CRC errors']=counter[10]
-		port_stats['No of collisions']=counter[11]
-                port_stats['No of Transmission errors']=counter[12]
-
+		port_stats['received_packets']=counter[0] #No of received packets
+		port_stats['transmitted_packets']=counter[1] # No of transmitted packets
+		port_stats['received_bytes']=counter[2]# No of received bytes
+		port_stats['transmitted_bytes']=counter[3] # No of transmitted bytes
+		port_stats['packetsdropped_rx']=counter[4]# No of packets dropped rx
+		port_stats['packetsdropped_tx']=counter[5] # No of packets dropped tx
+		port_stats['receive_errors']=counter[6] # No of receive errors
+		port_stats['transmit_errors']=counter[7] # No of transmit errors
+		port_stats['framealignment_errors']=counter[8] # No of frame alignment errors
+		port_stats['packetsRX_overrun']=counter[9] # No of packets with RX overrun
+		port_stats['CRC_errors']=counter[10] # No of CRC errors
+		port_stats['collisions']=counter[11] # No of collisions
+                port_stats['transmission_errors']=counter[12] # No of Transmission errors
+ 
 		
  	    	target_dir="../ofreport"
 	    	full_path=os.path.join(target_dir,'portstats.json')
@@ -325,18 +329,18 @@ class Grp110No40(base_tests.SimpleDataPlane):
 		flow_stats['cookie']=reply[0].stats[0].cookie
 		flow_stats['packet_count']=reply[0].stats[0].packet_count
 		flow_stats['byte_count']=reply[0].stats[0].byte_count
-		flow_stats['match in_port']=reply[0].stats[0].match.in_port
+		flow_stats['match_in_port']=reply[0].stats[0].match.in_port
 		#flow_stats['match dl_src']=reply[0].stats[0].match.dl_src[OFP_ETH_ALEN]
 		#flow_stats['match dl_dst']=reply[0].stats[0].match.dl_dst[OFP_ETH_ALEN]
-		flow_stats['match dl_vlan']=reply[0].stats[0].match.dl_vlan
-		flow_stats['match dl_vlan_pcp']=reply[0].stats[0].match.dl_vlan_pcp
-		flow_stats['match dl_type']=reply[0].stats[0].match.dl_type
-		flow_stats['match nw_src']=reply[0].stats[0].match.nw_src
-		flow_stats['match nw_dst']=reply[0].stats[0].match.nw_dst
-		flow_stats['match tp_src']=reply[0].stats[0].match.tp_src
-		flow_stats['match tp_dst']=reply[0].stats[0].match.tp_dst
-		flow_stats['match nw_tos']=reply[0].stats[0].match.nw_tos
-		flow_stats['match nw_proto']=reply[0].stats[0].match.nw_proto
+		flow_stats['match_dl_vlan']=reply[0].stats[0].match.dl_vlan
+		flow_stats['match_dl_vlan_pcp']=reply[0].stats[0].match.dl_vlan_pcp
+		flow_stats['match_dl_type']=reply[0].stats[0].match.dl_type
+		flow_stats['match_nw_src']=reply[0].stats[0].match.nw_src
+		flow_stats['match_nw_dst']=reply[0].stats[0].match.nw_dst
+		flow_stats['match_tp_src']=reply[0].stats[0].match.tp_src
+		flow_stats['match_tp_dst']=reply[0].stats[0].match.tp_dst
+		flow_stats['match_nw_tos']=reply[0].stats[0].match.nw_tos
+		flow_stats['match_nw_proto']=reply[0].stats[0].match.nw_proto
 	
 		
  	   	target_dir="../ofreport"
