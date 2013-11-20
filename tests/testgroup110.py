@@ -223,7 +223,7 @@ class Grp110No20(base_tests.SimpleDataPlane):
 			print "Sending packet to dp port " + str(of_ports[x]) 
 			print "Expecting packet on port " +str(of_ports[x])
 			     
-			(response,pkt) = self.controller.poll(exp_msg=ofp.OFPT_PACKET_IN,timeout=2)
+			(response,pkt) = self.controller.poll(exp_msg=ofp.OFPT_PACKET_IN,timeout=5)
 			try:
 
 				if(str(of_ports[x]) != str(response.in_port)):
@@ -234,8 +234,7 @@ class Grp110No20(base_tests.SimpleDataPlane):
 				pass
 
 
-
-
+ 
 
 
 
@@ -264,22 +263,23 @@ class Grp110No30(base_tests.SimpleDataPlane):
         	
         	(counter)=get_portstats(self,of_ports[1])
 		
-		
-		port_stats['received_packets']=counter[0] #No of received packets
-		port_stats['transmitted_packets']=counter[1] # No of transmitted packets
-		port_stats['received_bytes']=counter[2]# No of received bytes
-		port_stats['transmitted_bytes']=counter[3] # No of transmitted bytes
-		port_stats['packetsdropped_rx']=counter[4]# No of packets dropped rx
-		port_stats['packetsdropped_tx']=counter[5] # No of packets dropped tx
-		port_stats['receive_errors']=counter[6] # No of receive errors
-		port_stats['transmit_errors']=counter[7] # No of transmit errors
-		port_stats['framealignment_errors']=counter[8] # No of frame alignment errors
-		port_stats['packetsRX_overrun']=counter[9] # No of packets with RX overrun
-		port_stats['CRC_errors']=counter[10] # No of CRC errors
-		port_stats['collisions']=counter[11] # No of collisions
-                port_stats['transmission_errors']=counter[12] # No of Transmission errors
- 
-		
+		try:
+			port_stats['received_packets']=counter[0] #No of received packets
+			port_stats['transmitted_packets']=counter[1] # No of transmitted packets
+			port_stats['received_bytes']=counter[2]# No of received bytes
+			port_stats['transmitted_bytes']=counter[3] # No of transmitted bytes
+			port_stats['packetsdropped_rx']=counter[4]# No of packets dropped rx
+			port_stats['packetsdropped_tx']=counter[5] # No of packets dropped tx
+			port_stats['receive_errors']=counter[6] # No of receive errors
+			port_stats['transmit_errors']=counter[7] # No of transmit errors
+			port_stats['framealignment_errors']=counter[8] # No of frame alignment errors
+			port_stats['packetsRX_overrun']=counter[9] # No of packets with RX overrun
+			port_stats['CRC_errors']=counter[10] # No of CRC errors
+			port_stats['collisions']=counter[11] # No of collisions
+			port_stats['transmission_errors']=counter[12] # No of Transmission errors
+  
+		except:
+			port_stats={}
  	    	target_dir="../ofreport"
 	    	full_path=os.path.join(target_dir,'portstats.json')
 		f=open(full_path, "w")
@@ -300,7 +300,7 @@ class Grp110No40(base_tests.SimpleDataPlane):
 
 
 	def runTest(self):
-		port_stats={}
+		
 
              	of_ports = config["port_map"].keys()
 		of_ports.sort()
@@ -319,44 +319,51 @@ class Grp110No40(base_tests.SimpleDataPlane):
 		
 		flow_stats={}
 		(reply)=get_flowstats(self,match)
-                flow_stats['length']=reply[0].stats[0].length
-		flow_stats['table_id']=reply[0].stats[0].table_id
-		flow_stats['duration_sec']=reply[0].stats[0].duration_sec
-		flow_stats['duration_nsec']=reply[0].stats[0].duration_nsec
-		flow_stats['priority']=reply[0].stats[0].priority
-		flow_stats['idle_timeout']=reply[0].stats[0].idle_timeout
-		flow_stats['hard_timeout']=reply[0].stats[0].hard_timeout
-		flow_stats['cookie']=reply[0].stats[0].cookie
-		flow_stats['packet_count']=reply[0].stats[0].packet_count
-		flow_stats['byte_count']=reply[0].stats[0].byte_count
-		flow_stats['match_in_port']=reply[0].stats[0].match.in_port
+		
+		
+		
+		#print packet_counter
+		#print byte_counter
+		#print reply[0].stats[0].length
+		try:
+			flow_stats['length']=reply[0].stats[0].length
+			flow_stats['table_id']=reply[0].stats[0].table_id
+			flow_stats['duration_sec']=reply[0].stats[0].duration_sec
+			flow_stats['duration_nsec']=reply[0].stats[0].duration_nsec
+			flow_stats['priority']=reply[0].stats[0].priority
+			flow_stats['idle_timeout']=reply[0].stats[0].idle_timeout
+			flow_stats['hard_timeout']=reply[0].stats[0].hard_timeout
+			flow_stats['cookie']=reply[0].stats[0].cookie
+			flow_stats['packet_count']=reply[0].stats[0].packet_count
+			flow_stats['byte_count']=reply[0].stats[0].byte_count
+			flow_stats['match_in_port']=reply[0].stats[0].match.in_port
 		#flow_stats['match dl_src']=reply[0].stats[0].match.dl_src[OFP_ETH_ALEN]
 		#flow_stats['match dl_dst']=reply[0].stats[0].match.dl_dst[OFP_ETH_ALEN]
-		flow_stats['match_dl_vlan']=reply[0].stats[0].match.dl_vlan
-		flow_stats['match_dl_vlan_pcp']=reply[0].stats[0].match.dl_vlan_pcp
-		flow_stats['match_dl_type']=reply[0].stats[0].match.dl_type
-		flow_stats['match_nw_src']=reply[0].stats[0].match.nw_src
-		flow_stats['match_nw_dst']=reply[0].stats[0].match.nw_dst
-		flow_stats['match_tp_src']=reply[0].stats[0].match.tp_src
-		flow_stats['match_tp_dst']=reply[0].stats[0].match.tp_dst
-		flow_stats['match_nw_tos']=reply[0].stats[0].match.nw_tos
-		flow_stats['match_nw_proto']=reply[0].stats[0].match.nw_proto
-	
+			flow_stats['match_dl_vlan']=reply[0].stats[0].match.dl_vlan
+			flow_stats['match_dl_vlan_pcp']=reply[0].stats[0].match.dl_vlan_pcp
+			flow_stats['match_dl_type']=reply[0].stats[0].match.dl_type
+			flow_stats['match_nw_src']=reply[0].stats[0].match.nw_src
+			flow_stats['match_nw_dst']=reply[0].stats[0].match.nw_dst
+			flow_stats['match_tp_src']=reply[0].stats[0].match.tp_src
+			flow_stats['match_tp_dst']=reply[0].stats[0].match.tp_dst
+			flow_stats['match_nw_tos']=reply[0].stats[0].match.nw_tos
+			flow_stats['match_nw_proto']=reply[0].stats[0].match.nw_proto
+		except:
+			flow_stats={}
 		
  	   	target_dir="../ofreport"
 	    	full_path=os.path.join(target_dir,'flowstats.json')
 		f=open(full_path, "w")
 	    	f.write(json.dumps(flow_stats))
 	    	f.close
-
 # TABLE STATS
 
 class Grp110No50(base_tests.SimpleDataPlane):
 
-	"""
-	Send table_stats request to the switch and direct the table_stats reply to a json file
+ 
+
 	
-	"""
+
 
 	def runTest(self):
 		logging = get_logger()
@@ -385,11 +392,12 @@ class Grp110No50(base_tests.SimpleDataPlane):
 
 		(reply) = get_tablestats(self)
 		table_stats={}
-                
-                table_stats['lookup_count']=reply[0]
-                table_stats['matched_count']=reply[1]
-                table_stats['active_count']=reply[2]
-
+                try: 
+			table_stats['lookup_count']=reply[0]
+			table_stats['matched_count']=reply[1]
+			table_stats['active_count']=reply[2]
+		except:
+			table_stats={}
 
 	        
  	    	target_dir="../ofreport"
