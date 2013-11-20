@@ -263,7 +263,7 @@ class Grp110No30(base_tests.SimpleDataPlane):
         	
         	(counter)=get_portstats(self,of_ports[1])
 		
-<<<<<<< HEAD
+
 		try:
 			port_stats['received_packets']=counter[0] #No of received packets
 			port_stats['transmitted_packets']=counter[1] # No of transmitted packets
@@ -282,7 +282,6 @@ class Grp110No30(base_tests.SimpleDataPlane):
 		except:
 			port_stats={}
  	    	target_dir="../ofreport"
-=======
 		
 		port_stats['received_packets']=counter[0] #No of received packets
 		port_stats['transmitted_packets']=counter[1] # No of transmitted packets
@@ -300,7 +299,6 @@ class Grp110No30(base_tests.SimpleDataPlane):
  
 		
  	    	target_dir="../ofreport/jsonfiles/"
->>>>>>> 1ad759c3a76d9bae010238908cb63b57a7bd3718
 	    	full_path=os.path.join(target_dir,'portstats.json')
 		f=open(full_path, "w")
 	    	f.write(json.dumps(port_stats))
@@ -339,7 +337,7 @@ class Grp110No40(base_tests.SimpleDataPlane):
 		
 		flow_stats={}
 		(reply)=get_flowstats(self,match)
-<<<<<<< HEAD
+
 		
 		
 		
@@ -358,7 +356,7 @@ class Grp110No40(base_tests.SimpleDataPlane):
 			flow_stats['packet_count']=reply[0].stats[0].packet_count
 			flow_stats['byte_count']=reply[0].stats[0].byte_count
 			flow_stats['match_in_port']=reply[0].stats[0].match.in_port
-=======
+
                 flow_stats['length']=reply.stats[0].length
 		flow_stats['table_id']=reply[0].stats[0].table_id
 		flow_stats['duration_sec']=reply[0].stats[0].duration_sec
@@ -370,7 +368,7 @@ class Grp110No40(base_tests.SimpleDataPlane):
 		flow_stats['packet_count']=reply[0].stats[0].packet_count
 		flow_stats['byte_count']=reply[0].stats[0].byte_count
 		flow_stats['match_in_port']=reply[0].stats[0].match.in_port
->>>>>>> 1ad759c3a76d9bae010238908cb63b57a7bd3718
+
 		#flow_stats['match dl_src']=reply[0].stats[0].match.dl_src[OFP_ETH_ALEN]
 		#flow_stats['match dl_dst']=reply[0].stats[0].match.dl_dst[OFP_ETH_ALEN]
 			flow_stats['match_dl_vlan']=reply[0].stats[0].match.dl_vlan
