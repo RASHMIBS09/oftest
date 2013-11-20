@@ -181,7 +181,7 @@ class Grp110No10(base_tests.SimpleProtocol):
 		    features_port[x]['Port_peer']=reply.ports[x].peer
 
            
- 	    target_dir="../ofreport"
+ 	    target_dir="../ofreport/jsonffiles/"
 	    full_path=os.path.join(target_dir,'feature.json')
 	    full_path_port=os.path.join(target_dir,'featureport.json')
 	    f=open(full_path, "w")
@@ -280,7 +280,7 @@ class Grp110No30(base_tests.SimpleDataPlane):
                 port_stats['transmission_errors']=counter[12] # No of Transmission errors
  
 		
- 	    	target_dir="../ofreport"
+ 	    	target_dir="../ofreport/jsonfiles/"
 	    	full_path=os.path.join(target_dir,'portstats.json')
 		f=open(full_path, "w")
 	    	f.write(json.dumps(port_stats))
@@ -319,7 +319,7 @@ class Grp110No40(base_tests.SimpleDataPlane):
 		
 		flow_stats={}
 		(reply)=get_flowstats(self,match)
-                flow_stats['length']=reply[0].stats[0].length
+                flow_stats['length']=reply.stats[0].length
 		flow_stats['table_id']=reply[0].stats[0].table_id
 		flow_stats['duration_sec']=reply[0].stats[0].duration_sec
 		flow_stats['duration_nsec']=reply[0].stats[0].duration_nsec
@@ -343,7 +343,7 @@ class Grp110No40(base_tests.SimpleDataPlane):
 		flow_stats['match_nw_proto']=reply[0].stats[0].match.nw_proto
 	
 		
- 	   	target_dir="../ofreport"
+ 	   	target_dir="../ofreport/jsonfiles/"
 	    	full_path=os.path.join(target_dir,'flowstats.json')
 		f=open(full_path, "w")
 	    	f.write(json.dumps(flow_stats))
@@ -392,7 +392,7 @@ class Grp110No50(base_tests.SimpleDataPlane):
 
 
 	        
- 	    	target_dir="../ofreport"
+ 	    	target_dir="../ofreport/jsonfiles/"
 	    	full_path=os.path.join(target_dir,'tablestats.json')
                 f=open(full_path, "w")
                 f.write(json.dumps(table_stats))
