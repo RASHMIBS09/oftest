@@ -142,7 +142,7 @@ if(data["OFPC_TABLE_STATS"]):
 	matching["OFPC_TABLE_STATS"][0]="Grp60No200"
 	matching["OFPC_TABLE_STATS"][1]="Grp60No210"
 
-target_dir="../ofreport"
+target_dir="../ofreport/jsonfiles/"
 full_path=os.path.join(target_dir,'matching.json')
 f=open(full_path, "w")
 f.write(json.dumps(matching))
@@ -150,12 +150,5 @@ f.close
 
 
 
-"""
-write_path=os.path.join(target_dir,'matchingtestcases.txt')
-text_file = open(write_path , "w")
-text_file.write(" %s"%matching)
-text_file.close()
-
-json_data.close()
 
 """

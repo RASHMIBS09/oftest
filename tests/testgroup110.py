@@ -181,7 +181,7 @@ class Grp110No10(base_tests.SimpleProtocol):
 		    features_port[x]['Port_peer']=reply.ports[x].peer
 
            
- 	    target_dir="../ofreport"
+ 	    target_dir="../ofreport/jsonffiles/"
 	    full_path=os.path.join(target_dir,'feature.json')
 	    full_path_port=os.path.join(target_dir,'featureport.json')
 	    f=open(full_path, "w")
@@ -263,6 +263,7 @@ class Grp110No30(base_tests.SimpleDataPlane):
         	
         	(counter)=get_portstats(self,of_ports[1])
 		
+<<<<<<< HEAD
 		try:
 			port_stats['received_packets']=counter[0] #No of received packets
 			port_stats['transmitted_packets']=counter[1] # No of transmitted packets
@@ -281,6 +282,25 @@ class Grp110No30(base_tests.SimpleDataPlane):
 		except:
 			port_stats={}
  	    	target_dir="../ofreport"
+=======
+		
+		port_stats['received_packets']=counter[0] #No of received packets
+		port_stats['transmitted_packets']=counter[1] # No of transmitted packets
+		port_stats['received_bytes']=counter[2]# No of received bytes
+		port_stats['transmitted_bytes']=counter[3] # No of transmitted bytes
+		port_stats['packetsdropped_rx']=counter[4]# No of packets dropped rx
+		port_stats['packetsdropped_tx']=counter[5] # No of packets dropped tx
+		port_stats['receive_errors']=counter[6] # No of receive errors
+		port_stats['transmit_errors']=counter[7] # No of transmit errors
+		port_stats['framealignment_errors']=counter[8] # No of frame alignment errors
+		port_stats['packetsRX_overrun']=counter[9] # No of packets with RX overrun
+		port_stats['CRC_errors']=counter[10] # No of CRC errors
+		port_stats['collisions']=counter[11] # No of collisions
+                port_stats['transmission_errors']=counter[12] # No of Transmission errors
+ 
+		
+ 	    	target_dir="../ofreport/jsonfiles/"
+>>>>>>> 1ad759c3a76d9bae010238908cb63b57a7bd3718
 	    	full_path=os.path.join(target_dir,'portstats.json')
 		f=open(full_path, "w")
 	    	f.write(json.dumps(port_stats))
@@ -319,6 +339,7 @@ class Grp110No40(base_tests.SimpleDataPlane):
 		
 		flow_stats={}
 		(reply)=get_flowstats(self,match)
+<<<<<<< HEAD
 		
 		
 		
@@ -337,6 +358,19 @@ class Grp110No40(base_tests.SimpleDataPlane):
 			flow_stats['packet_count']=reply[0].stats[0].packet_count
 			flow_stats['byte_count']=reply[0].stats[0].byte_count
 			flow_stats['match_in_port']=reply[0].stats[0].match.in_port
+=======
+                flow_stats['length']=reply.stats[0].length
+		flow_stats['table_id']=reply[0].stats[0].table_id
+		flow_stats['duration_sec']=reply[0].stats[0].duration_sec
+		flow_stats['duration_nsec']=reply[0].stats[0].duration_nsec
+		flow_stats['priority']=reply[0].stats[0].priority
+		flow_stats['idle_timeout']=reply[0].stats[0].idle_timeout
+		flow_stats['hard_timeout']=reply[0].stats[0].hard_timeout
+		flow_stats['cookie']=reply[0].stats[0].cookie
+		flow_stats['packet_count']=reply[0].stats[0].packet_count
+		flow_stats['byte_count']=reply[0].stats[0].byte_count
+		flow_stats['match_in_port']=reply[0].stats[0].match.in_port
+>>>>>>> 1ad759c3a76d9bae010238908cb63b57a7bd3718
 		#flow_stats['match dl_src']=reply[0].stats[0].match.dl_src[OFP_ETH_ALEN]
 		#flow_stats['match dl_dst']=reply[0].stats[0].match.dl_dst[OFP_ETH_ALEN]
 			flow_stats['match_dl_vlan']=reply[0].stats[0].match.dl_vlan
@@ -351,7 +385,7 @@ class Grp110No40(base_tests.SimpleDataPlane):
 		except:
 			flow_stats={}
 		
- 	   	target_dir="../ofreport"
+ 	   	target_dir="../ofreport/jsonfiles/"
 	    	full_path=os.path.join(target_dir,'flowstats.json')
 		f=open(full_path, "w")
 	    	f.write(json.dumps(flow_stats))
@@ -400,7 +434,7 @@ class Grp110No50(base_tests.SimpleDataPlane):
 			table_stats={}
 
 	        
- 	    	target_dir="../ofreport"
+ 	    	target_dir="../ofreport/jsonfiles/"
 	    	full_path=os.path.join(target_dir,'tablestats.json')
                 f=open(full_path, "w")
                 f.write(json.dumps(table_stats))
