@@ -392,7 +392,7 @@ class Grp110No50(base_tests.SimpleDataPlane):
 
 	def runTest(self):
 		logging = get_logger()
-		logging.info("Running Grp60No200 Active Counter test")
+		
 
 		of_ports = config["port_map"].keys()
 		of_ports.sort()
