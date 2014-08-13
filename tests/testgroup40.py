@@ -681,8 +681,7 @@ class Grp40No130(base_tests.SimpleProtocol):
         nonstrict_delete_emer(self,match)
         nonstrict_delete(self,match)
 
-        logging.info("Verifying the switch doesnot  send/generates the Flow removed message")
-	#logging.info("verifying the switch does not send a flow removed message")
+        logging.info("Verifying the switch does not send a flow removed message")
         (response, pkt) = self.controller.poll(exp_msg=ofp.OFPT_FLOW_REMOVED, timeout=2)
         self.assertTrue(response is None, "Recevied a Flow removed message")
 
@@ -702,11 +701,9 @@ class Grp40No140(base_tests.SimpleDataPlane):
         #Clear switch state
         rc = delete_all_flows(self.controller)
         self.assertEqual(rc, 0, "Failed to delete all flows")
-        
-
-        #####Grp40No140#####
+      
+    
         logging.info("Installing an exact match flow")
-        
         #Insert F with an exact Match 
         (pkt,match) = exact_match(self,of_ports)  
 
@@ -743,8 +740,7 @@ class Grp40No150(base_tests.SimpleDataPlane):
         nonstrict_delete(self,match1)
 
         rv=all_stats_get(self)
-        self.assertTrue(rv["flows"]==0, "The non_strict_delete message did not gets deleted") 	
-
+	self.assertTrue(rv["flows"]==0, "The non_strict_delete message did not delete all the flows. {0} flow(s) left in DUT.".format(rv["flows"]))
 	
 class Grp40No160(base_tests.SimpleDataPlane):
       @wireshark_capture
@@ -777,23 +773,23 @@ class Grp40No160(base_tests.SimpleDataPlane):
 
         rv=all_stats_get(self)
         self.assertTrue(rv["flows"]==1,"The switch did not perform the required delete operation ")
- 
-        rc = delete_all_flows(self.controller)
-        self.assertEqual(rc, 0, "Failed to delete all flows")
-
-        
+                
 class Grp40No170(base_tests.SimpleDataPlane):
-    @wireshark_capture
-    def runTest(self):
+      @wireshark_capture
+      def runTest(self):
         logging = get_logger()
         logging.info("Grp40No170 test begins")
         of_ports = config["port_map"].keys()
         of_ports.sort()
         self.assertTrue(len(of_ports) > 1, "Not enough ports for test")
 	
+	#Clear switch state
+        rc = delete_all_flows(self.controller)
+        self.assertEqual(rc, 0, "Failed to delete all flows")
+	
 	logging.info("Inserting three overlapping flows with different priority")
         #Insert T , add Priority P (say 100 ) 
-        (pkt,match) = match_all_except_source_address(self,of_ports,priority=10)
+        (pkt,match) = match_all_except_source_address(self,of_ports,priority=100)
 
         #Insert T' add priority (200).
         (pkt1,match1) = wildcard_all_except_ingress(self,of_ports,priority=200)
@@ -808,11 +804,8 @@ class Grp40No170(base_tests.SimpleDataPlane):
         logging.info("Verifying all the flow entries have been deleted")
         rv=all_stats_get(self)
 	
-        self.assertTrue(rv["flows"]==0,"Non strict delete message did not perform the required action")
-
-        rc = delete_all_flows(self.controller)
-        self.assertEqual(rc, 0, "Failed to delete all flows")
-       
+        self.assertTrue(rv["flows"]==0,"Non strict delete message did not delete all the flow entries")
+              
 class Grp40No180(base_tests.SimpleDataPlane):
       @wireshark_capture
       def runTest(self):
@@ -823,9 +816,12 @@ class Grp40No180(base_tests.SimpleDataPlane):
         of_ports = config["port_map"].keys()
         of_ports.sort()
         self.assertTrue(len(of_ports) > 1, "Not enough ports for test")
+	
+	ok = delete_all_flows(self.controller)
+        self.assertEqual(ok, 0, "Could not delete all flows.")
           
 	logging.info("Inserting three overlapping flows with different priorities") 
-        (pkt,match) = match_all_except_source_address(self,of_ports,priority=10)
+        (pkt,match) = match_all_except_source_address(self,of_ports,priority=100)
         (pkt1,match1) = wildcard_all_except_ingress(self,of_ports,priority=200)
         (pkt2,match2) = wildcard_all_except_ingress(self,of_ports,priority=300)
 
@@ -836,8 +832,6 @@ class Grp40No180(base_tests.SimpleDataPlane):
         logging.info("Verifying that only the expected flows are deleted")
         rv=all_stats_get(self)
         self.assertTrue(rv["flows"]==2, "The switch did not perform the required action")
-
-
 
 class Grp40No190(base_tests.SimpleDataPlane):
     """Check that flow mod delete messages can filter on out_port.
