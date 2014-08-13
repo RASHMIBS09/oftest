@@ -645,7 +645,7 @@ class Grp40No120(base_tests.SimpleDataPlane):
 class Grp40No130(base_tests.SimpleProtocol):
 
     """Delete emergency flow and verify no message is generated.An emergency flow deletion will not generate flow-removed messages even if 
-    Send Flow removed message flag was set during the emergency flow entry"""
+     Send Flow removed message flag was set during the emergency flow entry"""
     @wireshark_capture
     def runTest(self):
         logging = get_logger()
@@ -680,12 +680,11 @@ class Grp40No130(base_tests.SimpleProtocol):
         logging.info("Deleting the emergency flow installed")
         nonstrict_delete_emer(self,match)
         nonstrict_delete(self,match)
-	logging.info("verifying the switch does not send a flow removed message")
-        (response, pkt) = self.controller.poll(exp_msg=ofp.OFPT_FLOW_REMOVED ,
-                                               timeout=2)
-        self.assertTrue(response is None, 
-                        'Recevied a Flow removed message')
 
+        logging.info("Verifying the switch doesnot  send/generates the Flow removed message")
+	#logging.info("verifying the switch does not send a flow removed message")
+        (response, pkt) = self.controller.poll(exp_msg=ofp.OFPT_FLOW_REMOVED, timeout=2)
+        self.assertTrue(response is None, "Recevied a Flow removed message")
 
 class Grp40No140(base_tests.SimpleDataPlane):
 
@@ -715,30 +714,38 @@ class Grp40No140(base_tests.SimpleDataPlane):
         logging.info("sending a strict delete message")
         strict_delete(self,match)
         rv=all_stats_get(self)
-        self.assertTrue(rv["flows"]==0,"could not delete the flow flows")
+        self.assertTrue(rv["flows"]==0,"could not delete the flows")
+	
+class Grp40No150(base_tests.SimpleDataPlane):
+      @wireshark_capture
+      def runTest(self):
+        logging = get_logger()
+        logging.info("Grp40No150 test begins")
+    
+        of_ports = config["port_map"].keys()
+        of_ports.sort()
+        self.assertTrue(len(of_ports) > 1, "Not enough ports for test")
 
-	#####Grp40No160#####
-        """logging.info("Inserting two overlapping flows")
-        
-        #Insert Flow T with match on all, except one wildcarded (say src adddress). 
+        #Clear switch state
+        rc = delete_all_flows(self.controller)
+        self.assertEqual(rc, 0, "Failed to delete all flows")
+
+        logging.info("Installing two overlapping flows")
+        #Insert T and T' again . 
         (pkt,match) = match_all_except_source_address(self,of_ports)
-
-        #Insert another flow T' with match on ingress_port , wildcarded rest.  
         (pkt1,match1) = wildcard_all_except_ingress(self,of_ports)
 
         rv=all_stats_get(self)
-        self.assertTrue(rv["flows"]==2,"could not install two overlapping flows")
+        self.assertTrue(rv["flows"]==2,"Could not install 2 overlapping flows")
+        #Issue Non-strict Delete with match on ingress_port.Verify T+T' gets deleted
 
-        #Issue Strict Delete matching on ingress_port. Verify only T' gets deleted
-        logging.info("Sending a Strict delete message")
-        strict_delete(self,match1)
+        logging.info("Sending a non_strict delete message")
+        nonstrict_delete(self,match1)
 
         rv=all_stats_get(self)
-        self.assertTrue(rv["flows"]==1,"The switch did not perform the required action")
- 
-        rc = delete_all_flows(self.controller)
-        self.assertEqual(rc, 0, "Failed to delete all flows")
-        """
+        self.assertTrue(rv["flows"]==0, "The non_strict_delete message did not gets deleted") 	
+
+	
 class Grp40No160(base_tests.SimpleDataPlane):
       @wireshark_capture
       def runTest(self):
@@ -769,58 +776,22 @@ class Grp40No160(base_tests.SimpleDataPlane):
         strict_delete(self,match1)
 
         rv=all_stats_get(self)
-        self.assertTrue(rv["flows"]==1,"The switch did not perform the required")
+        self.assertTrue(rv["flows"]==1,"The switch did not perform the required delete operation ")
  
         rc = delete_all_flows(self.controller)
         self.assertEqual(rc, 0, "Failed to delete all flows")
 
-	#####Grp40No150#####
-        """logging.info("Installing two overlapping flows")
         
-        Insert T and T' again . 
-         (pkt,match) = match_all_except_source_address(self,of_ports)
-        (pkt1,match1) = wildcard_all_except_ingress(self,of_ports)
-
-        rv=all_stats_get(self)
-
-        logging.info("Sending a non_strict delete message")
-        nonstrict_delete(self,match1)
-
-        rv=all_stats_get(self)
-        self.assertTrue(rv["flows"]==0, "The non_strict_delete message did not delete all the flows. {0} flow(s) left in DUT.".format(rv["flows"]))
-        """
-
-	#####Grp40No170#####
-        """logging.info("Inserting three overlapping flows with different priorities")
-  
-        Insert T , add Priority P (say 100 ) 
-        (pkt,match) = match_all_except_source_address(self,of_ports,priority=100)
-
-        Insert T' add priority (200).
-        (pkt1,match1) = wildcard_all_except_ingress(self,of_ports,priority=200)
-        
-        Insert T' again add priority 300 --> T" . 
-        (pkt2,match2) = wildcard_all_except_ingress(self,of_ports,priority=300)
-
-        Issue Non-Strict Delete and verify all getting deleted
-        logging.info("Sending a non_strict_delete message")
-        nonstrict_delete(self,match1,priority=200)
-
-        logging.info("Verifying all the flow entries have been deleted")
-        rv=all_stats_get(self)
-        self.assertTrue(rv["flows"]==0,"Non strict delete message did not delete all the flo entries")
-
-        rc = delete_all_flows(self.controller)
-        self.assertEqual(rc, 0, "Failed to delete all flows")
-       """
 class Grp40No170(base_tests.SimpleDataPlane):
-      @wireshark_capture
-      def runTest(self):
+    @wireshark_capture
+    def runTest(self):
         logging = get_logger()
-        logging.info("Inserting three overlapping flows with different priority")
+        logging.info("Grp40No170 test begins")
         of_ports = config["port_map"].keys()
         of_ports.sort()
         self.assertTrue(len(of_ports) > 1, "Not enough ports for test")
+	
+	logging.info("Inserting three overlapping flows with different priority")
         #Insert T , add Priority P (say 100 ) 
         (pkt,match) = match_all_except_source_address(self,of_ports,priority=10)
 
@@ -837,38 +808,23 @@ class Grp40No170(base_tests.SimpleDataPlane):
         logging.info("Verifying all the flow entries have been deleted")
         rv=all_stats_get(self)
 	
-        self.assertTrue(rv["flows"]==0,"Non strict delete message did not deleted")
+        self.assertTrue(rv["flows"]==0,"Non strict delete message did not perform the required action")
 
         rc = delete_all_flows(self.controller)
         self.assertEqual(rc, 0, "Failed to delete all flows")
-
-
-        #####Grp40No180#####
-        """logging.info("Inserting three overlapping flows with different priorities")
-        Issue Strict-Delete and verify only T'' gets deleted. 
-        (pkt,match) = match_all_except_source_address(self,of_ports,priority=100)
-        (pkt1,match1) = wildcard_all_except_ingress(self,of_ports,priority=200)
-        (pkt2,match2) = wildcard_all_except_ingress(self,of_ports,priority=300)
-        
-        logging.info("Sending a strict delete message")
-        strict_delete(self,match1,priority=200)
-        verify_tablestats(self,expect_active=2)
-        
-        logging.info("Verifying that only the expected flows are deleted")
-        rv=all_stats_get(self)
-   	self.assertTrue(rv["flows"]==2, "The switch did not perform the required action")"""
-
+       
 class Grp40No180(base_tests.SimpleDataPlane):
       @wireshark_capture
       def runTest(self):
         logging = get_logger()
-        logging.info("Inserting three overlapping flows with different priorities")
+        logging.info("Grp40No180 test begins")
         #Issue Strict-Delete and verify only T'' gets deleted. 
 
         of_ports = config["port_map"].keys()
         of_ports.sort()
         self.assertTrue(len(of_ports) > 1, "Not enough ports for test")
-
+          
+	logging.info("Inserting three overlapping flows with different priorities") 
         (pkt,match) = match_all_except_source_address(self,of_ports,priority=10)
         (pkt1,match1) = wildcard_all_except_ingress(self,of_ports,priority=200)
         (pkt2,match2) = wildcard_all_except_ingress(self,of_ports,priority=300)
@@ -881,34 +837,6 @@ class Grp40No180(base_tests.SimpleDataPlane):
         rv=all_stats_get(self)
         self.assertTrue(rv["flows"]==2, "The switch did not perform the required action")
 
-class Grp40No150(base_tests.SimpleDataPlane):
-      @wireshark_capture
-      def runTest(self):
-        logging = get_logger()
-        logging.info("Installing two overlapping flows")
-    
-        of_ports = config["port_map"].keys()
-        of_ports.sort()
-        self.assertTrue(len(of_ports) > 1, "Not enough ports for test")
-
-        #Clear switch state
-        rc = delete_all_flows(self.controller)
-        self.assertEqual(rc, 0, "Failed to delete all flows")
-
-
-        #Insert T and T' again . 
-        (pkt,match) = match_all_except_source_address(self,of_ports)
-        (pkt1,match1) = wildcard_all_except_ingress(self,of_ports)
-
-        rv=all_stats_get(self)
-        self.assertTrue(rv["flows"]==2,"Could not install 2 overlapping flows")
-        #Issue Non-strict Delete with match on ingress_port.Verify T+T' gets deleted
-
-        logging.info("Sending a non_strict delete message")
-        nonstrict_delete(self,match1)
-
-        rv=all_stats_get(self)
-        self.assertTrue(rv["flows"]==0, "The non_strict_delete message did not gets deleted") 
 
 
 class Grp40No190(base_tests.SimpleDataPlane):
